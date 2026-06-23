@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // Allow CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -8,7 +7,6 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { language, lang, rtl } = req.body;
-
   if (!language) return res.status(400).json({ error: 'Missing language' });
 
   const dir = rtl ? 'rtl' : 'ltr';
@@ -35,7 +33,7 @@ WHY CHOOSE AKS VIRTUAL SCHOOL:
 - Flexible Virtual Learning — Students can learn from anywhere while remaining connected to a global learning community
 - Future-Ready Skills — Students develop communication, critical thinking, collaboration, creativity, and digital literacy skills
 
-OUR LEARNING JOURNEY (5 steps in order): Assess → Place → Learn → Grow → Advance
+OUR LEARNING JOURNEY (5 steps): Assess → Place → Learn → Grow → Advance
 Description: Students move forward when they demonstrate mastery, ensuring meaningful and lasting progress.
 
 WHO CAN JOIN:
@@ -69,24 +67,23 @@ Design rules:
 - Color theme: dark navy/green (#1a3a5c) for top header, bright green (#2e7d52) for section headers, white (#ffffff) for content areas, orange/yellow (#f5a623) for highlights and CTA
 - Clean professional A4-style layout, sections clearly separated with colored backgrounds
 - Use ONLY inline CSS (no <style> tags, no external CSS)
-- Output ONLY a single <div> element containing the full flyer — NO <!DOCTYPE>, NO <html>, NO <head>, NO <body> tags
+- Output ONLY a single <div> element — NO <!DOCTYPE>, NO <html>, NO <head>, NO <body> tags
 - Font: Arial, sans-serif
 - Max-width: 800px, margin: 0 auto
-- Include emoji icons where appropriate for visual appeal (✅ for lists, 🎯 📚 🌍 etc for sections)
+- Include emoji icons where appropriate (✅ for lists, 🎯 📚 🌍 etc for sections)
 - Make it print-ready and visually professional
 
-CRITICAL: Output ONLY the raw HTML div. No markdown, no code fences, no explanation text before or after.`;
+CRITICAL: Output ONLY the raw HTML div. No markdown, no code fences, no explanation.`;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'llama-3.3-70b-versatile',
         max_tokens: 4000,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -94,11 +91,11 @@ CRITICAL: Output ONLY the raw HTML div. No markdown, no code fences, no explanat
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      return res.status(500).json({ error: err.error?.message || 'Anthropic API error' });
+      return res.status(500).json({ error: err.error?.message || 'Groq API error' });
     }
 
     const data = await response.json();
-    const html = data.content.map(b => b.text || '').join('').replace(/```html|```/g, '').trim();
+    const html = data.choices[0].message.content.replace(/```html|```/g, '').trim();
 
     return res.status(200).json({ html });
 
