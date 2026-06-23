@@ -70,7 +70,6 @@ Design rules:
 - Output ONLY a single <div> element — NO <!DOCTYPE>, NO <html>, NO <head>, NO <body> tags
 - Font: Arial, sans-serif
 - Max-width: 800px, margin: 0 auto
-- Include emoji icons where appropriate (🎯 📚 🌍 etc for sections)
 - Make it print-ready and visually professional
 
 CRITICAL: Output ONLY the raw HTML div. No markdown, no code fences, no explanation.`;
