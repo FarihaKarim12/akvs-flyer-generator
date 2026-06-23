@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKS Virtual School — Flyer Generator</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green-dark: #1a5c36;
+    --green-mid: #2e7d52;
+    --green-light: #4caf7d;
+    --green-bg: #f0faf4;
+    --green-border: #c3e6cb;
+    --green-soft: #e8f5ec;
+    --white: #ffffff;
+    --gray-text: #444;
+    --gray-muted: #888;
+  }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--green-bg); min-height: 100vh; color: var(--gray-text); }
+
+  /* NAV */
+  nav { background: var(--green-dark); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .nav-brand { display: flex; align-items: center; gap: 10px; color: #fff; font-size: 17px; font-weight: 600; text-decoration: none; }
+  .nav-logo { width: 36px; height: 36px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .nav-badge { background: var(--green-light); color: #fff; font-size: 11px; padding: 2px 10px; border-radius: 20px; font-weight: 500; }
+
+  /* HERO */
+  .hero { background: linear-gradient(135deg, var(--green-dark), var(--green-mid)); color: #fff; text-align: center; padding: 3rem 1rem 2rem; }
+  .hero h1 { font-size: clamp(20px, 4vw, 32px); font-weight: 700; margin-bottom: 0.5rem; }
+  .hero p { font-size: 15px; opacity: 0.85; max-width: 480px; margin: 0 auto; }
+
+  /* CONTAINER */
+  .container { max-width: 840px; margin: 0 auto; padding: 2rem 1rem; }
+
+  /* STEP LABEL */
+  .step-label { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 700; color: var(--green-dark); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem; }
+  .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--green-dark); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+  /* LANGUAGE GRID */
+  .lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); gap: 10px; margin-bottom: 2rem; }
+  .lang-card { background: #fff; border: 2px solid var(--green-border); border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 10px; }
+  .lang-card:hover { border-color: var(--green-mid); background: var(--green-soft); transform: translateY(-1px); }
+  .lang-card.selected { border-color: var(--green-dark); background: var(--green-soft); box-shadow: 0 0 0 3px rgba(46,125,82,0.15); }
+  .lang-flag { font-size: 22px; flex-shrink: 0; }
+  .lang-text { display: flex; flex-direction: column; }
+  .lang-name { font-size: 13px; font-weight: 600; color: var(--gray-text); }
+  .lang-native { font-size: 12px; color: var(--gray-muted); margin-top: 1px; }
+  .rtl-tag { font-size: 10px; background: #fff8e1; color: #7a5f00; border: 1px solid #ffe082; border-radius: 4px; padding: 1px 5px; margin-top: 3px; display: inline-block; }
+
+  /* GENERATE BTN */
+  .gen-wrap { text-align: center; margin-bottom: 2rem; }
+  .gen-btn { background: var(--green-dark); color: #fff; border: none; border-radius: 10px; padding: 14px 36px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 10px; }
+  .gen-btn:hover:not(:disabled) { background: #155230; transform: translateY(-1px); }
+  .gen-btn:disabled { background: #9fcdb5; cursor: not-allowed; }
+
+  /* LOADING */
+  .loading-box { display: none; text-align: center; padding: 2.5rem; background: #fff; border-radius: 12px; border: 1.5px solid var(--green-border); margin-bottom: 2rem; }
+  .spinner { width: 42px; height: 42px; margin: 0 auto 1rem; border: 3px solid var(--green-border); border-top-color: var(--green-mid); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-box p { color: var(--green-dark); font-weight: 500; margin-bottom: 4px; }
+  .loading-box small { color: var(--gray-muted); font-size: 12px; }
+
+  /* OUTPUT */
+  #flyerOutput { display: none; }
+  .output-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 10px; }
+  .output-toolbar h3 { font-size: 15px; color: var(--green-dark); font-weight: 600; }
+  .toolbar-btns { display: flex; gap: 8px; }
+  .tb-btn { background: #fff; border: 1.5px solid var(--green-border); border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--green-dark); display: flex; align-items: center; gap: 6px; transition: background 0.12s; }
+  .tb-btn:hover { background: var(--green-soft); }
+  .tb-btn.primary { background: var(--green-dark); color: #fff; border-color: var(--green-dark); }
+  .tb-btn.primary:hover { background: #155230; }
+  .flyer-wrap { background: #fff; border-radius: 12px; border: 1.5px solid var(--green-border); overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  #flyerFrame { width: 100%; min-height: 600px; border: none; display: block; }
+
+  /* ERROR */
+  .error-box { display: none; background: #fff5f5; border: 1.5px solid #f5c6c6; border-radius: 10px; padding: 1rem 1.25rem; color: #a32d2d; margin-bottom: 1.5rem; font-size: 14px; }
+
+  footer { text-align: center; padding: 1.5rem; font-size: 12px; color: var(--gray-muted); border-top: 1px solid #ddd; margin-top: 2rem; }
+
+  @media (max-width: 500px) {
+    .lang-grid { grid-template-columns: 1fr 1fr; }
+    nav { padding: 0 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="#">
+    <div class="nav-logo">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2e7d52" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    AKS Virtual School
+  </a>
+  <span class="nav-badge">Flyer Generator</span>
+</nav>
+
+<div class="hero">
+  <h1>Accelerated Learning Programme</h1>
+  <p>Generate your school flyer instantly in any language — ready to share or print.</p>
+</div>
+
+<div class="container">
+
+  <div class="step-label"><span class="step-num">1</span> Select a language</div>
+
+  <div class="lang-grid">
+    <div class="lang-card" data-lang="ur" data-rtl="true" data-label="Urdu" onclick="selectLang(this)">
+      <span class="lang-flag">🇵🇰</span>
+      <div class="lang-text"><span class="lang-name">Urdu</span><span class="lang-native">اردو</span><span class="rtl-tag">RTL</span></div>
+    </div>
+    <div class="lang-card" data-lang="tr" data-rtl="false" data-label="Turkish" onclick="selectLang(this)">
+      <span class="lang-flag">🇹🇷</span>
+      <div class="lang-text"><span class="lang-name">Turkish</span><span class="lang-native">Türkçe</span></div>
+    </div>
+    <div class="lang-card" data-lang="hi" data-rtl="false" data-label="Hindi" onclick="selectLang(this)">
+      <span class="lang-flag">🇮🇳</span>
+      <div class="lang-text"><span class="lang-name">Hindi</span><span class="lang-native">हिन्दी</span></div>
+    </div>
+    <div class="lang-card" data-lang="ta" data-rtl="false" data-label="Tamil" onclick="selectLang(this)">
+      <span class="lang-flag">🇮🇳</span>
+      <div class="lang-text"><span class="lang-name">Tamil</span><span class="lang-native">தமிழ்</span></div>
+    </div>
+    <div class="lang-card" data-lang="te" data-rtl="false" data-label="Telugu" onclick="selectLang(this)">
+      <span class="lang-flag">🇮🇳</span>
+      <div class="lang-text"><span class="lang-name">Telugu</span><span class="lang-native">తెలుగు</span></div>
+    </div>
+    <div class="lang-card" data-lang="gu" data-rtl="false" data-label="Gujarati" onclick="selectLang(this)">
+      <span class="lang-flag">🇮🇳</span>
+      <div class="lang-text"><span class="lang-name">Gujarati</span><span class="lang-native">ગુજરાતી</span></div>
+    </div>
+    <div class="lang-card" data-lang="ru" data-rtl="false" data-label="Russian" onclick="selectLang(this)">
+      <span class="lang-flag">🇷🇺</span>
+      <div class="lang-text"><span class="lang-name">Russian</span><span class="lang-native">Русский</span></div>
+    </div>
+    <div class="lang-card" data-lang="kk" data-rtl="false" data-label="Kazakh" onclick="selectLang(this)">
+      <span class="lang-flag">🇰🇿</span>
+      <div class="lang-text"><span class="lang-name">Kazakh</span><span class="lang-native">Қазақша</span></div>
+    </div>
+    <div class="lang-card" data-lang="prs" data-rtl="true" data-label="Dari / Afghan" onclick="selectLang(this)">
+      <span class="lang-flag">🇦🇫</span>
+      <div class="lang-text"><span class="lang-name">Dari / Afghan</span><span class="lang-native">دری</span><span class="rtl-tag">RTL</span></div>
+    </div>
+    <div class="lang-card" data-lang="sw" data-rtl="false" data-label="Swahili" onclick="selectLang(this)">
+      <span class="lang-flag">🇹🇿</span>
+      <div class="lang-text"><span class="lang-name">Swahili</span><span class="lang-native">Kiswahili</span></div>
+    </div>
+    <div class="lang-card" data-lang="ar-sy" data-rtl="true" data-label="Syrian Arabic" onclick="selectLang(this)">
+      <span class="lang-flag">🇸🇾</span>
+      <div class="lang-text"><span class="lang-name">Syrian Arabic</span><span class="lang-native">عربي سوري</span><span class="rtl-tag">RTL</span></div>
+    </div>
+    <div class="lang-card" data-lang="en" data-rtl="false" data-label="English" onclick="selectLang(this)">
+      <span class="lang-flag">🌐</span>
+      <div class="lang-text"><span class="lang-name">English</span><span class="lang-native">Original</span></div>
+    </div>
+  </div>
+
+  <div class="step-label"><span class="step-num">2</span> Generate flyer</div>
+
+  <div class="gen-wrap">
+    <button class="gen-btn" id="genBtn" disabled onclick="generateFlyer()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      <span id="genBtnText">Select a language above</span>
+    </button>
+  </div>
+
+  <div class="error-box" id="errorBox"></div>
+
+  <div class="loading-box" id="loadingBox">
+    <div class="spinner"></div>
+    <p id="loadingMsg">Translating flyer...</p>
+    <small>This usually takes 15–25 seconds</small>
+  </div>
+
+  <div id="flyerOutput">
+    <div class="output-toolbar">
+      <h3 id="outputLabel">✅ Flyer ready</h3>
+      <div class="toolbar-btns">
+        <button class="tb-btn" onclick="resetApp()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          New language
+        </button>
+        <button class="tb-btn primary" onclick="downloadFlyer()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download HTML
+        </button>
+      </div>
+    </div>
+    <div class="flyer-wrap">
+      <iframe id="flyerFrame" title="Generated Flyer"></iframe>
+    </div>
+  </div>
+
+</div>
+
+<footer>AKS Virtual School · Flyer Generator · Powered by Claude AI</footer>
+
+<script>
+  let selected = null;
+  let generatedHTML = '';
+
+  function selectLang(el) {
+    document.querySelectorAll('.lang-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selected = { lang: el.dataset.lang, rtl: el.dataset.rtl === 'true', label: el.dataset.label };
+    const btn = document.getElementById('genBtn');
+    btn.disabled = false;
+    document.getElementById('genBtnText').textContent = 'Generate flyer in ' + selected.label;
+    document.getElementById('flyerOutput').style.display = 'none';
+    document.getElementById('errorBox').style.display = 'none';
+  }
+
+  function setLoading(on, msg) {
+    document.getElementById('loadingBox').style.display = on ? 'block' : 'none';
+    if (msg) document.getElementById('loadingMsg').textContent = msg;
+    document.getElementById('genBtn').disabled = on;
+  }
+
+  function showError(msg) {
+    const box = document.getElementById('errorBox');
+    box.textContent = '❌ ' + msg;
+    box.style.display = 'block';
+  }
+
+  async function generateFlyer() {
+    if (!selected) return;
+    setLoading(true, 'Translating flyer into ' + selected.label + '...');
+    document.getElementById('flyerOutput').style.display = 'none';
+    document.getElementById('errorBox').style.display = 'none';
+
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ language: selected.label, lang: selected.lang, rtl: selected.rtl })
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || 'Server error');
+
+      const dir = selected.rtl ? 'rtl' : 'ltr';
+      generatedHTML = `<!DOCTYPE html>
+<html lang="${selected.lang}" dir="${dir}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKS Flyer — ${selected.label}</title>
+</head>
+<body style="margin:0;padding:1rem;background:#f0faf4;font-family:Arial,sans-serif;">
+${data.html}
+</body>
+</html>`;
+
+      setLoading(false);
+      const frame = document.getElementById('flyerFrame');
+      frame.srcdoc = generatedHTML;
+      frame.onload = () => {
+        try {
+          const h = frame.contentDocument.body.scrollHeight;
+          frame.style.height = (h + 40) + 'px';
+        } catch(e) {}
+      };
+      document.getElementById('outputLabel').textContent = '✅ Flyer ready — ' + selected.label;
+      document.getElementById('flyerOutput').style.display = 'block';
+      document.getElementById('flyerOutput').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    } catch (err) {
+      setLoading(false);
+      showError(err.message || 'Something went wrong. Please try again.');
+    }
+  }
+
+  function downloadFlyer() {
+    if (!generatedHTML) return;
+    const blob = new Blob([generatedHTML], { type: 'text/html;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'AKS-Flyer-' + (selected?.label || 'flyer') + '.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function resetApp() {
+    selected = null;
+    generatedHTML = '';
+    document.querySelectorAll('.lang-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('genBtn').disabled = true;
+    document.getElementById('genBtnText').textContent = 'Select a language above';
+    document.getElementById('flyerOutput').style.display = 'none';
+    document.getElementById('errorBox').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
