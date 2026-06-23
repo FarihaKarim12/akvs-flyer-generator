@@ -1,0 +1,6 @@
+{
+  "name": "aks-flyer-generator",
+  "version": "1.0.0",
+  "description": "AKS Virtual School Flyer Generator",
+  "private": true
+}
