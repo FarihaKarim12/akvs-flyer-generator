@@ -13,64 +13,74 @@ export default async function handler(req, res) {
 
   const prompt = `You are a professional translator and HTML designer.
 
-Generate a complete, self-contained HTML flyer for AKS Virtual School's "Accelerated Learning Programme" translated into ${language} (language code: ${lang}).
+Generate a complete, self-contained HTML flyer for AKS Virtual School translated into ${language} (language code: ${lang}).
 
-The flyer must:
-- Be fully translated into ${language} — every single word, heading, label, and button text
-- Use direction="${dir}" for ${rtl ? 'right-to-left' : 'left-to-right'} text on the root element
-- Match this exact content structure:
+Translate ALL text into ${language}. Use direction="${dir}".
 
-HEADER:
+CONTENT TO TRANSLATE AND DISPLAY:
+
+HEADER (top 30%):
 - School name: AKS Virtual School
-- Programme name: Accelerated Learning Programme
+- Programme: Accelerated Learning Programme
 - Tagline: Personalized Pathways. Measurable Progress. Global Opportunities.
-- Sub-text: Helping students build strong foundations, accelerate learning, and achieve success in English • Mathematics • Science
+- Description: Helping Students Build Strong Foundations, Accelerate Learning, and Achieve Success.
 
 WHY CHOOSE AKS VIRTUAL SCHOOL:
+At AKS Virtual School, students receive personalized support, flexible learning opportunities, and a clear pathway to academic growth in: English • Mathematics • Science
+Our programme is designed to help every learner progress with confidence through targeted instruction, continuous feedback, and measurable outcomes.
+
+WHAT MAKES US DIFFERENT:
 - Personalized Learning — Students learn at the level that best meets their needs
 - Measurable Progress — Regular assessments help students and families see growth over time
 - Expert Educators — Experienced teachers provide ongoing support and guidance
 - Flexible Virtual Learning — Students can learn from anywhere while remaining connected to a global learning community
 - Future-Ready Skills — Students develop communication, critical thinking, collaboration, creativity, and digital literacy skills
 
-OUR LEARNING JOURNEY (5 steps): Assess → Place → Learn → Grow → Advance
-Description: Students move forward when they demonstrate mastery, ensuring meaningful and lasting progress.
+OUR LEARNING JOURNEY (show as 5 steps with arrows):
+Assess → Place → Learn → Grow → Advance
+Students move forward when they demonstrate mastery, ensuring meaningful and lasting progress.
 
-WHO CAN JOIN:
+WHO CAN JOIN (the programme is ideal for):
 - Students needing additional academic support
 - English language learners
 - Students seeking accelerated progression
 - Learners transitioning between educational systems
 - Students looking for flexible virtual learning opportunities
 
-PARENT SUPPORT:
+OUR VISION:
+To empower every learner with access to high-quality, inclusive, and future-focused education that enables them to thrive academically, socially, and globally.
+
+PARENT SUPPORT (parents receive):
 - Orientation Videos
 - Multilingual Programme Guides
 - Regular Progress Updates
 - Ongoing Communication with Educators
 
-OUR VISION: To empower every learner with access to high-quality, inclusive, and future-focused education that enables them to thrive academically, socially, and globally.
-
-JOIN A GLOBAL LEARNING COMMUNITY: Where progress is visible, achievement is celebrated, and every learner is empowered to succeed.
-
-ENROLL TODAY: Give your child the advantage of personalized learning and a brighter future.
+JOIN A GLOBAL LEARNING COMMUNITY:
+Where progress is visible, achievement is celebrated, and every learner is empowered to succeed.
 
 CONTACT US:
 - AKS Virtual School
-- Website: [Insert Website]
-- Email: [Insert Email]
-- Phone: [Insert Contact Number]
+- Website: aksvirtualacademy.org
+- Email: akvsrandom@gmail.com
+- Phone: 123456789
+
+ENROLL TODAY: Give your child the advantage of personalized learning and a brighter future.
 
 FOOTER: Strong Foundations · Accelerated Learning · Limitless Opportunities
 
-Design rules:
-- Color theme: dark navy/green (#1a3a5c) for top header, bright green (#2e7d52) for section headers, white (#ffffff) for content areas, orange/yellow (#f5a623) for highlights and CTA
-- Clean professional A4-style layout, sections clearly separated with colored backgrounds
-- Use ONLY inline CSS (no <style> tags, no external CSS)
-- Output ONLY a single <div> element — NO <!DOCTYPE>, NO <html>, NO <head>, NO <body> tags
+LAYOUT RULES:
+- Top section (30%): Large bold headline, tagline, description on dark green background (#1a3a5c)
+- Middle section (50%): Why Choose AKS + Learning Journey side by side, Who Can Join + Parent Support side by side, all on white with green section headers (#2e7d52)
+- Bottom section (20%): Vision, Join Community, Contact, Enroll Today CTA in orange/yellow (#f5a623)
+
+DESIGN RULES:
+- Use ONLY inline CSS
+- Output ONLY a single <div> — NO html, head, body tags
 - Font: Arial, sans-serif
 - Max-width: 800px, margin: 0 auto
-- Make it print-ready and visually professional
+- Professional A4-style print-ready layout
+- The learning journey steps must be displayed as styled boxes with arrows between them
 
 CRITICAL: Output ONLY the raw HTML div. No markdown, no code fences, no explanation.`;
 
