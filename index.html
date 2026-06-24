@@ -225,63 +225,47 @@
     box.style.display = 'block';
   }
 
-  async function generateFlyer() {
-    if (!selected) return;
-    setLoading(true, 'Translating flyer into ' + selected.label + '...');
-    document.getElementById('flyerOutput').style.display = 'none';
-    document.getElementById('errorBox').style.display = 'none';
+  const FLYER_MAP = {
+  'ur': 'flyers/urdu.png',
+  'tr': 'flyers/turkish.png',
+  'hi': 'flyers/hindi.png',
+  'ta': 'flyers/tamil.png',
+  'te': 'flyers/telugu.png',
+  'gu': 'flyers/gujarati.png',
+  'ru': 'flyers/russian.png',
+  'kk': 'flyers/kazakh.png',
+  'ps': 'flyers/pashto.png',
+  'prs': 'flyers/dari.png',
+  'sw': 'flyers/swahili.png',
+  'ar-sy': 'flyers/syrian.png',
+  'en': 'flyers/english.jpeg'
+};
 
-    try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ language: selected.label, lang: selected.lang, rtl: selected.rtl })
-      });
+function generateFlyer() {
+  if (!selected) return;
 
-      const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error || 'Server error');
+  const path = FLYER_MAP[selected.lang];
 
-      const dir = selected.rtl ? 'rtl' : 'ltr';
-      generatedHTML = `<!DOCTYPE html>
-<html lang="${selected.lang}" dir="${dir}">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AKS Flyer — ${selected.label}</title>
-</head>
-<body style="margin:0;padding:1rem;background:#f0faf4;font-family:Arial,sans-serif;">
-${data.html}
-</body>
-</html>`;
+  document.getElementById('flyerOutput').style.display = 'block';
+  document.getElementById('outputLabel').textContent = 'Flyer ready — ' + selected.label;
 
-      setLoading(false);
-      const frame = document.getElementById('flyerFrame');
-      frame.srcdoc = generatedHTML;
-      frame.onload = () => {
-        try {
-          const h = frame.contentDocument.body.scrollHeight;
-          frame.style.height = (h + 40) + 'px';
-        } catch(e) {}
-      };
-      document.getElementById('outputLabel').textContent = '✅ Flyer ready — ' + selected.label;
-      document.getElementById('flyerOutput').style.display = 'block';
-      document.getElementById('flyerOutput').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Show image instead of iframe
+  document.getElementById('flyerFrame').srcdoc = `
+    <html><body style="margin:0;padding:1rem;background:#f0faf4;text-align:center;">
+      <img src="../${path}" style="max-width:100%;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,0.1);" />
+    </body></html>`;
 
-    } catch (err) {
-      setLoading(false);
-      showError(err.message || 'Something went wrong. Please try again.');
-    }
-  }
+  document.getElementById('flyerOutput').scrollIntoView({ behavior: 'smooth' });
+}
 
   function downloadFlyer() {
-    if (!generatedHTML) return;
-    const blob = new Blob([generatedHTML], { type: 'text/html;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'AKS-Flyer-' + (selected?.label || 'flyer') + '.html';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
+  if (!selected) return;
+  const path = FLYER_MAP[selected.lang];
+  const a = document.createElement('a');
+  a.href = path;
+  a.download = 'AKS-Flyer-' + selected.label + '.png';
+  a.click();
+}
 
   function resetApp() {
     selected = null;
